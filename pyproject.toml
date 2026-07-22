@@ -1,0 +1,13 @@
+[project]
+name = "be-story-teller"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "click>=8.4.2",
+    "dotenv>=0.9.9",
+    "ipykernel>=7.3.0",
+    "openai>=2.46.0",
+    "requests>=2.34.2",
+]

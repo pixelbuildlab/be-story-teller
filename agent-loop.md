@@ -1,0 +1,1 @@
+User:Create a story about a tiny dinosaur.↓Thought:Need better prompt.↓PromptOptimizerTool↓Thought:Need story outline.↓StoryPlannerTool↓Thought:Need story.↓StoryWriterTool↓Thought:Need illustrations.↓SceneExtractionTool↓ImageGenerationTool↓Thought:Need final book.↓MarkdownWriterTool↓PDFExporterTool↓Done
