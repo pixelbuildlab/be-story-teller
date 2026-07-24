@@ -31,11 +31,11 @@ async def OptimizePromptTool(prompt: str):
 
 
 # built an outline
-# StoryPlannerTool
+# StoryPlannerTool done
 
 
 # Ollama calls
-# StoryWriterTool
+# StoryWriterTool done
 
 # extract data for image generation
 # SceneExtractionTool

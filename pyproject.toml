@@ -8,6 +8,7 @@ dependencies = [
     "click>=8.4.2",
     "dotenv>=0.9.9",
     "ipykernel>=7.3.0",
+    "jupyterlab>=4.6.2",
     "openai>=2.46.0",
     "requests>=2.34.2",
 ]
