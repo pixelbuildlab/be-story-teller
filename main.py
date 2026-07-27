@@ -1,6 +1,9 @@
 import click
 import asyncio
-from app.src.ai_helper import openai_chat_completion
+from app.src.ai_service import AIService
+from app.src.agent_service import AgentService
+from app.src.prompt import SYSTEM_META_PROMPT
+from app.src.agent_tools.tools import tools
 
 VERSION = 0.1
 
@@ -9,8 +12,9 @@ VERSION = 0.1
 @click.version_option(VERSION)
 @click.argument("prompt")
 def main(prompt: str):
-    asyncio.run(openai_chat_completion(prompt))
-    pass
+    ai = AIService()
+    agent = AgentService(ai, tools)
+    asyncio.run(agent.flow(prompt, SYSTEM_META_PROMPT))
 
 
 if __name__ == "__main__":
