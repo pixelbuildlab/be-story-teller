@@ -8,8 +8,8 @@ OPEN_ROUTER_COMPLETION_MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free"
 OPEN_ROUTER_URL = "https://openrouter.ai/api/v1"
 
 OLLAMA_COMPLETION_MODEL = (
-    # "qwen3:latest"
-    "gemma4:e4b"
+    "qwen3:latest"
+    # "gemma4:e4b"
 )
 
 

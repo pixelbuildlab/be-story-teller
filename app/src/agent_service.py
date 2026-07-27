@@ -5,8 +5,10 @@ from app.src.agent_tools.story_outline_planner_tool import story_outline_planner
 from app.src.agent_tools.story_writer_tool import story_writer_tool
 from app.src.agent_tools.story_scene_exactor_tool import story_scene_exactor_tool
 from app.src.agent_tools.story_prompt_optimizer_tool import story_prompt_optimizer_tool
-from app.src.agent_tools.markdown_writer_tool import markdown_writer_tool
+
+# from app.src.agent_tools.markdown_writer_tool import markdown_writer_tool
 from app.src.agent_tools.image_generation_tool import image_generation_tool
+from app.src.custom_class import StoryResult
 
 
 class AgentService:
@@ -15,6 +17,10 @@ class AgentService:
         self.MESSAGES_LIST = []
         self.ai: AIService = ai
         self.tools = tools
+
+        self.metadata = None
+        self.story = None
+        self.image = None
 
     async def flow(self, prompt: str, META_PROMPT: str):
         try:
@@ -42,6 +48,7 @@ class AgentService:
                 ):
                     try:
                         for tool_call in response_message.tool_calls:
+
                             function_name = tool_call.function.name
                             function_args = json.loads(tool_call.function.arguments)
 
@@ -55,15 +62,26 @@ class AgentService:
                             )
 
                             if hasattr(tool_result, "content"):
+                                content = tool_result.content
+                                if function_name == "story_writer_tool":
+                                    self.story = content
+
+                                if function_name == "story_outline_planner_tool":
+                                    self.metadata = json.loads(content)
+
                                 self.MESSAGES_LIST.append(
                                     {
                                         "role": "tool",
                                         "tool_name": function_name,
                                         "tool_call_id": tool_call.id,
-                                        "content": tool_result.content,
+                                        "content": content,
                                     }
                                 )
                             else:
+                                if function_name == "image_generation_tool":
+                                    print(f"IMAGE OUTPUT")
+                                    print(tool_result)
+                                    self.image = tool_result
                                 self.MESSAGES_LIST.append(
                                     {
                                         "role": "tool",
@@ -72,16 +90,15 @@ class AgentService:
                                         "content": tool_result,
                                     }
                                 )
+
                     except Exception as e:
                         print("got an exception while invoking tool", e)
                         # maybe handle these exception by tools itself?
 
                 else:
-                    # LIKELY TO STOP LOOP
-                    # IF BUGGY USE A TOOL TO SOP THE LOOP.
-                    return chat_completion
-
-                # return chat_completion
+                    return StoryResult(
+                        story=self.story, metadata=self.metadata, image=self.image
+                    )
 
         except openai.APIConnectionError as e:
             print(f"Network connectivity issue: {e}")

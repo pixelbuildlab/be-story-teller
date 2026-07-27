@@ -96,25 +96,4 @@ tools = [
             },
         },
     },
-    {
-        "type": "function",
-        "function": {
-            "name": "markdown_writer_tool",
-            "description": "Final step in agentic story writer. Stories generated story and image in an output file in markdown format",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "created_story": {
-                        "type": "string",
-                        "description": "Finalized story",
-                    },
-                    "generated_image_path": {
-                        "type": "string",
-                        "description": "Image path for illustration in story.",
-                    },
-                },
-                "required": ["created_story", "generated_image_path"],
-            },
-        },
-    },
 ]

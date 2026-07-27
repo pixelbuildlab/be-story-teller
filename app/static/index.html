@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bedtime Story Generator</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+
+        body {
+            margin: 0;
+            background: #f5f5f5;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, .1);
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 140px;
+            resize: vertical;
+            padding: 12px;
+            font-size: 16px;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #loading {
+            margin-top: 20px;
+            display: none;
+            color: #0066cc;
+            font-weight: bold;
+        }
+
+        #result {
+            display: none;
+            margin-top: 30px;
+        }
+
+        img {
+            max-width: 100%;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background: #f3f3f3;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .error {
+            color: red;
+            margin-top: 20px;
+        }
+
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="no-print">
+
+            <h1>Bedtime Story Generator</h1>
+
+            <textarea id="prompt"
+                placeholder="Example: Write a bedtime story about a brave rabbit who learns kindness."></textarea>
+
+            <button onclick="generateStory()">Generate Story</button>
+
+            <div id="loading">
+                ⏳ Generating story... Please wait.
+            </div>
+
+            <div id="error" class="error"></div>
+        </div>
+
+        <div id="result">
+            <h2 id="title"></h2>
+
+            <img id="image" style="display:none;" />
+
+            <pre id="story"></pre>
+        </div>
+
+    </div>
+
+    <script>
+        async function generateStory() {
+
+            const prompt = document.getElementById("prompt").value.trim();
+
+            if (!prompt) {
+                alert("Please enter a prompt.");
+                return;
+            }
+
+            document.getElementById("loading").style.display = "block";
+            document.getElementById("result").style.display = "none";
+            document.getElementById("error").textContent = "";
+
+            try {
+                const controller = new AbortController();
+
+                window.addEventListener("beforeunload", () => {
+                    controller.abort();
+                });
+
+                const response = await fetch("/story", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        prompt: prompt
+                    }),
+                    signal: controller.signal,
+
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to generate story.");
+                }
+
+                const data = await response.json();
+
+                document.getElementById("title").textContent = data?.metadata?.title || "Generated Story";
+                document.getElementById("story").textContent = data?.story || "[NO CONTENT]";
+
+                if (data?.image?.path) {
+                    const img = document.getElementById("image");
+                    img.src = data?.image?.path;
+                    img.style.display = "block";
+                }
+
+                document.getElementById("result").style.display = "block";
+
+            } catch (err) {
+                document.getElementById("error").textContent = err.message;
+            }
+
+            document.getElementById("loading").style.display = "none";
+        }
+    </script>
+
+</body>
+
+</html>

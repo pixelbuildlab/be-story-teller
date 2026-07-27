@@ -17,10 +17,13 @@ async def image_generation_tool(prompt: str):
     )
     response.raise_for_status()
     if response.ok:
-        # 3. Open a file in write-binary mode ('wb') and write the content
         image_id = uuid()
         image_path = Path("outputs") / f"{image_id}.png"
         print("Ending image_generation_tool")
         with open(image_path, "wb") as file:
             file.write(response.content)
-            return f"./${image_id}.png", None
+            return {
+                "path": f"/images/{image_id}.png",
+                "metadata": "Image created for story success",
+                "status": "Image has been generated",
+            }, None
