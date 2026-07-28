@@ -1,0 +1,19 @@
+services:
+  server:
+    build: .
+    container_name: story-teller
+
+    ports:
+      - "8000:8000"
+
+    env_file:
+      - .env.docker
+
+    volumes:
+      - ./app:/app/app
+      - ./outputs:/app/outputs
+
+    environment:
+      - PYTHONUNBUFFERED=1
+
+    restart: unless-stopped

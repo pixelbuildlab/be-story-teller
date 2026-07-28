@@ -11,7 +11,10 @@ An agentic AI application that creates illustrated bedtime stories using LLM fun
 - Write complete children's stories
 - Extract the best scene for illustration
 - Generate an image
-- Save the story and image as a Markdown file
+- Lightweight front-end to interact to agent
+- Front-end to view generated content and illustration
+- Printing generated stories prints only generated content
+
 
 ## Installation
 
@@ -27,21 +30,32 @@ Copy the example environment file.
 
 ```bash
 cp .env.example .env
+cp .env.example .env.docker
 ```
 
-Update the values inside `.env`.
+Update the values inside `.env` and `.env.docker`.
 
 ## Run
+
+```bash
+docker-compose up --build -V
+```
+
+OR
 
 ```bash
 uv run fastapi dev
 ```
 
+Open http://localhost:8000/
+
 ## Output
 
-Generated stories are saved inside the `outputs/` directory.
+Generated stories illustrations are saved inside the `outputs/` directory. Stories as served through API
 
 ## Requirements
 
 - Python 3.11+
 - OpenAI-compatible API
+- Docker, Docker compose (Optional)
+- Ollama (optional)
