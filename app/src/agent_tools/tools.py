@@ -83,13 +83,13 @@ tools = [
         "type": "function",
         "function": {
             "name": "image_generation_tool",
-            "description": "Generates and stores an image related to story using input prompt",
+            "description": "REQUIRED FINAL STEP: Generates and stores the illustration image for the story using the extracted prompt. Must be called after story_scene_exactor_tool.",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "prompt": {
                         "type": "string",
-                        "description": "Prompt to generate images based on.",
+                        "description": "The detailed image prompt extracted from the story.",
                     }
                 },
                 "required": ["prompt"],

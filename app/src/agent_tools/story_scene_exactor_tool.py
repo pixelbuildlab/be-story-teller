@@ -23,15 +23,18 @@ async def story_scene_exactor_tool(created_story: str):
         {
             "role": "user",
             "content": (
-                "Extract a scene from the following story and generate a prompt for making an image and using inside story."
-                f"{created_story}"
+                "Extract a scene from the following story and generate a prompt for making an image.\n\n"
+                f"Story: {created_story}"
             ),
         },
     ]
 
     chat_completion = ai.AI(messages, None)
-
     response_message = chat_completion.choices[0].message
+
+    # Ensure the content is directive
+    if response_message.content:
+        response_message.content = f"Extracted Image Prompt: {response_message.content}\n\nNow, use the image_generation_tool with this prompt to generate the story illustration."
 
     print("End story_scene_exactor_tool")
 

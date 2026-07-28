@@ -13,16 +13,16 @@ from app.src.custom_class import StoryResult
 
 class AgentService:
 
-    def __init__(self, ai, tools):
-        self.MESSAGES_LIST = []
+    def __init__(self, ai: AIService, tools: list):
         self.ai: AIService = ai
         self.tools = tools
 
-        self.metadata = None
-        self.story = None
-        self.image = None
-
     async def flow(self, prompt: str, META_PROMPT: str):
+        messages_list = []
+        story = None
+        metadata = None
+        image = None
+
         try:
             messages = [
                 {"role": "system", "content": META_PROMPT},
@@ -31,15 +31,16 @@ class AgentService:
                     "content": f"{prompt}",
                 },
             ]
-            self.MESSAGES_LIST.extend(messages)
+            messages_list.extend(messages)
 
             while True:
-                print("STARTING AGENT")
-                chat_completion = self.ai.AI(self.MESSAGES_LIST, self.tools)
+                print("STARTING AGENT ITERATION")
+                chat_completion = self.ai.AI(messages_list, self.tools)
                 response_message = chat_completion.choices[0].message
 
-                self.MESSAGES_LIST.append(response_message.model_dump())
-                print(f"MAIN chat output: {response_message}")
+                # Append assistant message to history
+                messages_list.append(response_message.model_dump())
+                print(f"Assistant: {response_message.content if response_message.content else 'Tool Calls'}")
 
                 # If LLM returned tool calls, process them
                 if (
@@ -48,56 +49,61 @@ class AgentService:
                 ):
                     try:
                         for tool_call in response_message.tool_calls:
-
                             function_name = tool_call.function.name
                             function_args = json.loads(tool_call.function.arguments)
 
                             print(f"Tool call: {function_name}, args: {function_args}")
-                            agent_args = []
+                            
+                            # Dynamically get the tool function
+                            tool_function = globals().get(function_name)
+                            if not tool_function:
+                                print(f"Tool {function_name} not found in globals")
+                                continue
 
-                            tool_function = globals()[function_name]
+                            tool_result, tool_chat_completion = await tool_function(**function_args)
 
-                            tool_result, tool_chat_completion = await tool_function(
-                                *agent_args, **function_args
-                            )
-
+                            content = ""
                             if hasattr(tool_result, "content"):
                                 content = tool_result.content
                                 if function_name == "story_writer_tool":
-                                    self.story = content
-
+                                    story = content
                                 if function_name == "story_outline_planner_tool":
-                                    self.metadata = json.loads(content)
-
-                                self.MESSAGES_LIST.append(
-                                    {
-                                        "role": "tool",
-                                        "tool_name": function_name,
-                                        "tool_call_id": tool_call.id,
-                                        "content": content,
-                                    }
-                                )
+                                    try:
+                                        metadata = json.loads(content)
+                                    except:
+                                        metadata = content
                             else:
                                 if function_name == "image_generation_tool":
-                                    print(f"IMAGE OUTPUT")
-                                    print(tool_result)
-                                    self.image = tool_result
-                                self.MESSAGES_LIST.append(
-                                    {
-                                        "role": "tool",
-                                        "tool_name": function_name,
-                                        "tool_call_id": tool_call.id,
-                                        "content": tool_result,
-                                    }
-                                )
+                                    print("IMAGE GENERATED")
+                                    image = tool_result
+                                
+                                # If it's a dict or other object, stringify it for the tool response
+                                if isinstance(tool_result, (dict, list)):
+                                    content = json.dumps(tool_result)
+                                else:
+                                    content = str(tool_result)
+
+                            messages_list.append(
+                                {
+                                    "role": "tool",
+                                    "tool_call_id": tool_call.id,
+                                    "content": content,
+                                }
+                            )
 
                     except Exception as e:
-                        print("got an exception while invoking tool", e)
-                        # maybe handle these exception by tools itself?
+                        print(f"Error invoking tool {function_name}: {e}")
+                        # Optionally add an error message to the history so the AI knows
+                        messages_list.append({
+                            "role": "tool",
+                            "tool_call_id": tool_call.id,
+                            "content": f"Error: {str(e)}"
+                        })
 
                 else:
+                    # No more tool calls, return the result
                     return StoryResult(
-                        story=self.story, metadata=self.metadata, image=self.image
+                        story=story, metadata=metadata, image=image
                     )
 
         except openai.APIConnectionError as e:

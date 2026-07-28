@@ -2,6 +2,8 @@
 
 An agentic AI application that creates illustrated bedtime stories using LLM function calling.
 
+![Screenshot](screenshot/image.png)
+
 ## Features
 
 - Optimize story prompts
@@ -32,7 +34,7 @@ Update the values inside `.env`.
 ## Run
 
 ```bash
-python main.py [prompt]
+uv run fastapi dev
 ```
 
 ## Output

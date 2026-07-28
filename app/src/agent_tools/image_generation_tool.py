@@ -23,7 +23,8 @@ async def image_generation_tool(prompt: str):
         with open(image_path, "wb") as file:
             file.write(response.content)
             return {
+                "status": "SUCCESS: The illustration has been generated and saved successfully.",
                 "path": f"/images/{image_id}.png",
-                "metadata": "Image created for story success",
-                "status": "Image has been generated",
+                "content_description": "A high-quality image representing the story scene.",
+                "agent_instruction": "The story and illustration are now complete. You can now finalize your response.",
             }, None
