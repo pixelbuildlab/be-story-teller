@@ -12,5 +12,7 @@ wheels/
 .env
 
 outputs/*
+!outputs/.gitkeep*
+
 
 .ipynb_checkpoints/*
