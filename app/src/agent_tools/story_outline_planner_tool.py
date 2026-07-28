@@ -74,7 +74,7 @@ async def story_outline_planner_tool(optimized_prompt: str):
         },
     ]
 
-    chat_completion = ai.AI(messages, None)
+    chat_completion = await ai.AI(messages, None)
 
     response_message = chat_completion.choices[0].message
 

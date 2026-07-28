@@ -11,4 +11,5 @@ dependencies = [
     "jupyterlab>=4.6.2",
     "openai>=2.46.0",
     "requests>=2.34.2",
+    "websockets>=16.1.1",
 ]

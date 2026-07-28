@@ -99,9 +99,24 @@
 
             <button onclick="generateStory()">Generate Story</button>
 
+
+            <div class="no-print">
+                <hr />
+
+                <span>Agent Updates</span>
+                <br />
+                <span>Your ID: <span id="ws-id"></span></span>
+                <ul id='messages'>
+                </ul>
+                <hr />
+
+            </div>
+
             <div id="loading">
                 ⏳ Generating story... Please wait.
             </div>
+
+
 
             <div id="error" class="error"></div>
         </div>
@@ -117,14 +132,41 @@
     </div>
 
     <script>
+        const client_id = Date.now().toString()
+
+        try {
+            document.querySelector("#ws-id").textContent = client_id;
+            const ws = new WebSocket(`ws://localhost:8000/ws/${client_id}`);
+
+            ws.onmessage = function (event) {
+                const messages = document.getElementById('messages')
+                const message = document.createElement('li')
+                const content = document.createTextNode(event.data)
+                message.appendChild(content)
+                messages.appendChild(message)
+            };
+        } catch (error) {
+            console.error("Failed process websocket request", error)
+        }
+
+        // onclick
         async function generateStory() {
 
             const prompt = document.getElementById("prompt").value.trim();
+            const messages = document.getElementById('messages')
+
+
 
             if (!prompt) {
                 alert("Please enter a prompt.");
                 return;
             }
+
+            if (messages) {
+                messages.innerHTML = ''
+            }
+
+
 
             document.getElementById("loading").style.display = "block";
             document.getElementById("result").style.display = "none";
@@ -143,7 +185,8 @@
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        prompt: prompt
+                        prompt: prompt,
+                        client_id
                     }),
                     signal: controller.signal,
 
@@ -172,6 +215,8 @@
 
             document.getElementById("loading").style.display = "none";
         }
+
+
     </script>
 
 </body>

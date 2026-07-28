@@ -150,6 +150,7 @@ dependencies = [
     { name = "jupyterlab" },
     { name = "openai" },
     { name = "requests" },
+    { name = "websockets" },
 ]
 
 [package.metadata]
@@ -160,6 +161,7 @@ requires-dist = [
     { name = "jupyterlab", specifier = ">=4.6.2" },
     { name = "openai", specifier = ">=2.46.0" },
     { name = "requests", specifier = ">=2.34.2" },
+    { name = "websockets", specifier = ">=16.1.1" },
 ]
 
 [[package]]

@@ -37,7 +37,7 @@ async def story_writer_tool(planned_story_json: dict):
         },
     ]
 
-    chat_completion = ai.AI(messages, None)
+    chat_completion = await ai.AI(messages, None)
 
     response_message = chat_completion.choices[0].message
 
